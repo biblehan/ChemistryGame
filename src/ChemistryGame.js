@@ -323,7 +323,8 @@ const ChemistryGame = () => {
             ⚛️ 연금술사의 실험실 ⚛️
           </h1>
 
-          <div className="grid grid-cols-2 gap-4 mb-4">
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 mb-4">
+            {/* 보유 자금 */}
             <div className="bg-gradient-to-r from-yellow-400 to-orange-500 rounded-2xl p-4 text-white">
               <div className="flex items-center gap-2 mb-2">
                 <TrendingUp size={28} />
@@ -331,6 +332,8 @@ const ChemistryGame = () => {
               </div>
               <p className="text-4xl font-bold">{money}원</p>
             </div>
+
+            {/* 발견한 화합물 */}
             <div className="bg-gradient-to-r from-green-400 to-teal-500 rounded-2xl p-4 text-white">
               <div className="flex items-center gap-2 mb-2">
                 <Book size={28} />
@@ -338,37 +341,42 @@ const ChemistryGame = () => {
               </div>
               <p className="text-4xl font-bold">{discovered.length}/{recipes.length}</p>
             </div>
-          </div>
 
-          <div className="bg-gradient-to-r from-purple-400 to-pink-500 rounded-2xl p-4 mb-4 text-white">
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-xl font-bold">⭐ 레벨 {level}</span>
-              <span className="text-sm">{experience}/{experienceToNextLevel} EXP</span>
-            </div>
-            <div className="w-full bg-white/30 rounded-full h-3">
-              <div
-                className="bg-white rounded-full h-3 transition-all duration-300"
-                style={{ width: `${(experience / experienceToNextLevel) * 100}%` }}
-              ></div>
-            </div>
-          </div>
+            {/* 레벨 + 버튼 영역 */}
+            <div className="lg:col-span-3 grid grid-rows-[2fr_1fr] gap-2">
+              {/* 레벨 */}
+              <div className="bg-gradient-to-r from-purple-400 to-pink-500 rounded-2xl p-4 text-white flex flex-col justify-center">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-xl font-bold">⭐ 레벨 {level}</span>
+                  <span className="text-sm">{experience}/{experienceToNextLevel} EXP</span>
+                </div>
+                <div className="w-full bg-white/30 rounded-full h-3">
+                  <div
+                    className="bg-white rounded-full h-3 transition-all duration-300"
+                    style={{ width: `${(experience / experienceToNextLevel) * 100}%` }}
+                  ></div>
+                </div>
+              </div>
 
-          <div className="flex gap-2 mb-4">
-            <button
-              onClick={() => setShowLab(true)}
-              className={`flex-1 py-3 rounded-xl font-bold text-lg transition-all ${showLab ? 'bg-blue-500 text-white' : 'bg-white/20 text-white/60'
-                }`}
-            >
-              🧪 실험실
-            </button>
-            <button
-              onClick={() => setShowLab(false)}
-              className={`flex-1 py-3 rounded-xl font-bold text-lg transition-all ${!showLab ? 'bg-blue-500 text-white' : 'bg-white/20 text-white/60'
-                }`}
-            >
-              <Sparkles className="inline mr-2" />
-              도감
-            </button>
+              {/* 버튼 영역 */}
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => setShowLab(true)}
+                  className={`rounded-xl font-bold text-lg transition-all ${showLab ? 'bg-blue-500 text-white' : 'bg-white/20 text-white/60'
+                    }`}
+                >
+                  🧪 실험실
+                </button>
+                <button
+                  onClick={() => setShowLab(false)}
+                  className={`rounded-xl font-bold text-lg transition-all ${!showLab ? 'bg-blue-500 text-white' : 'bg-white/20 text-white/60'
+                    }`}
+                >
+                  <Sparkles className="inline mr-2" />
+                  도감
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -382,7 +390,7 @@ const ChemistryGame = () => {
                   <button
                     key={cat}
                     onClick={() => setElementCategory(cat)}
-                    className={`px-3 py-2 rounded-lg font-bold text-sm transition-all ${elementCategory === cat
+                    className={`px-2 py-1 rounded-lg font-bold text-xs transition-all ${elementCategory === cat
                       ? 'bg-blue-500 text-white'
                       : 'bg-white/20 text-white/60 hover:bg-white/30'
                       }`}
@@ -392,7 +400,7 @@ const ChemistryGame = () => {
                 ))}
               </div>
 
-              <div className="space-y-2 max-h-[500px] overflow-y-auto">
+              <div className="grid grid-cols-2 gap-2 max-h-[500px] overflow-y-auto">
                 {Object.keys(elementData)
                   .filter(element => elementData[element].category === elementCategory)
                   .map(element => {
@@ -405,65 +413,70 @@ const ChemistryGame = () => {
                           : 'bg-white/10'
                           }`}
                       >
-                        <div className="flex items-center justify-between mb-2">
+                        <div className="flex flex-col gap-2">
                           <div className="flex items-center gap-2">
                             <div
-                              className={`w-12 h-12 rounded-lg flex items-center justify-center text-white font-bold text-xl ${isLocked ? 'cursor-not-allowed' : 'cursor-pointer hover:scale-110'
+                              className={`w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold text-lg ${isLocked ? 'cursor-not-allowed' : 'cursor-pointer hover:scale-110'
                                 } transition-transform relative`}
                               style={{ backgroundColor: isLocked ? '#666' : elementData[element].color }}
                               onClick={() => !isLocked && openElementModal(element)}
                             >
                               {isLocked ? '🔒' : element}
                             </div>
-                            <div>
+                            <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-1">
-                                <p className="font-bold text-white">
+                                <p className="font-bold text-white text-sm truncate">
                                   {isLocked ? '???' : elementData[element].name}
                                 </p>
                                 {!isLocked && (
                                   <button
                                     onClick={() => openElementModal(element)}
-                                    className="text-white/70 hover:text-white transition-colors"
+                                    className="text-white/70 hover:text-white transition-colors flex-shrink-0"
                                   >
-                                    <Info size={16} />
+                                    <Info size={14} />
                                   </button>
                                 )}
                               </div>
                               {isLocked ? (
-                                <p className="text-sm text-white/70">
+                                <p className="text-xs text-white/70">
                                   레벨 {elementData[element].unlockLevel} 필요
                                 </p>
                               ) : (
-                                <p className="text-sm text-white/70">
+                                <p className="text-xs text-white/70">
                                   보유: {elements[element] || 0}개
                                 </p>
                               )}
                             </div>
                           </div>
+
                           <button
                             onClick={() => buyElement(element)}
                             disabled={isLocked}
-                            className={`px-4 py-2 rounded-lg font-bold transition-all ${isLocked
+                            className={`w-full px-3 py-1.5 rounded-lg font-bold text-sm transition-all ${isLocked
                               ? 'bg-gray-500 text-gray-300 cursor-not-allowed'
                               : 'bg-green-500 hover:bg-green-600 text-white'
                               }`}
                           >
                             {isLocked ? '잠김' : `${elementData[element].price}원`}
                           </button>
+
+                          {!isLocked && autoProduction[element] > 0 && (
+                            <p className="text-xs text-green-300">
+                              ⚡ 자동 생산: +{autoProduction[element]}/3초
+                            </p>
+                          )}
+
+                          {!isLocked ? (
+                            <button
+                              onClick={() => buyAutoProducer(element)}
+                              className="w-full bg-purple-500/50 hover:bg-purple-600/70 text-white px-2 py-1 rounded text-xs font-bold transition-all"
+                            >
+                              자동 생산기 ({elementData[element].price * 10}원)
+                            </button>
+                          ) : (
+                            <div className="h-6"></div>
+                          )}
                         </div>
-                        {!isLocked && autoProduction[element] > 0 && (
-                          <p className="text-xs text-green-300">
-                            ⚡ 자동 생산: +{autoProduction[element]}/3초
-                          </p>
-                        )}
-                        {!isLocked && (
-                          <button
-                            onClick={() => buyAutoProducer(element)}
-                            className="w-full bg-purple-500/50 hover:bg-purple-600/70 text-white px-2 py-1 rounded text-xs font-bold mt-1 transition-all"
-                          >
-                            자동 생산기 ({elementData[element].price * 10}원)
-                          </button>
-                        )}
                       </div>
                     );
                   })}
@@ -473,41 +486,63 @@ const ChemistryGame = () => {
             <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
               <h2 className="text-2xl font-bold mb-4 text-white">🧪 실험 공간</h2>
 
-              <div className="bg-white/20 rounded-xl p-4 mb-4 min-h-32">
-                <p className="text-white font-bold mb-3">선택된 원소:</p>
-                <div className="flex flex-wrap gap-2">
-                  {selectedElements.map((elem, idx) => (
-                    <div
-                      key={idx}
-                      className="w-12 h-12 rounded-lg flex items-center justify-center text-white font-bold shadow-lg"
-                      style={{ backgroundColor: elementData[elem].color }}
-                    >
-                      {elem}
+              <div className="grid grid-cols-2 gap-4 mb-4">
+                {/* 선택된 원소 */}
+                <div className="bg-white/20 rounded-xl p-4">
+                  <p className="text-white font-bold mb-3">선택된 원소:</p>
+                  <div className="relative">
+                    <div className="flex flex-wrap gap-2 h-32 overflow-y-auto content-start p-1">
+                      {selectedElements.map((elem, idx) => (
+                        <div
+                          key={idx}
+                          className="w-6 h-6 rounded-lg flex items-center justify-center text-white font-bold shadow-lg text-xs flex-shrink-0"
+                          style={{ backgroundColor: elementData[elem].color }}
+                        >
+                          {elem}
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="bg-white/20 rounded-xl p-4 mb-4">
-                <p className="text-white font-bold mb-3">보유 원소 클릭:</p>
-                <div className="flex flex-wrap gap-2">
-                  {Object.keys(elements).filter(e => elements[e] > 0).map(elem => (
-                    <button
-                      key={elem}
-                      onClick={() => selectElement(elem)}
-                      className="relative hover:scale-110 transition-transform"
-                    >
-                      <div
-                        className="w-14 h-14 rounded-lg flex items-center justify-center text-white font-bold shadow-lg"
-                        style={{ backgroundColor: elementData[elem].color }}
-                      >
-                        {elem}
+                    {selectedElements.length > 16 && (
+                      <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white/30 to-transparent pointer-events-none flex items-end justify-center pb-1">
+                        <span className="text-xs text-white/70">↓</span>
                       </div>
-                      <span className="absolute -top-2 -right-2 bg-yellow-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">
-                        {elements[elem]}
-                      </span>
-                    </button>
-                  ))}
+                    )}
+                  </div>
+                </div>
+
+                {/* 보유 원소 */}
+                <div className="bg-white/20 rounded-xl p-4">
+                  <p className="text-white font-bold mb-3">보유 원소 클릭:</p>
+                  <div className="relative">
+                    <div className="flex flex-wrap gap-2 h-32 overflow-y-auto content-start p-1">
+                      {Object.keys(elements).filter(e => elements[e] > 0).map(elem => (
+                        <div
+                          key={elem}
+                          className="relative flex-shrink-0"
+                        >
+                          <button
+                            onClick={() => selectElement(elem)}
+                            className="hover:scale-110 transition-transform block"
+                          >
+                            <div
+                              className="w-7 h-7 rounded-lg flex items-center justify-center text-white font-bold shadow-lg text-xs"
+                              style={{ backgroundColor: elementData[elem].color }}
+                            >
+                              {elem}
+                            </div>
+                          </button>
+                          <span className="absolute -top-1 -right-1 bg-yellow-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-[10px] font-bold pointer-events-none">
+                            {elements[elem]}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                    {Object.keys(elements).filter(e => elements[e] > 0).length > 12 && (
+                      <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white/30 to-transparent pointer-events-none flex items-end justify-center pb-1">
+                        <span className="text-xs text-white/70">↓</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -573,7 +608,7 @@ const ChemistryGame = () => {
                 const isDiscovered = discovered.includes(recipe.symbol);
                 return (
                   <div
-                    key={recipe.symbol}
+                    key={recipe.symbol + (isDiscovered ? '-d' : '-u')} // 발견 여부에 따라 key 달리 지정
                     className={`rounded-xl p-4 transition-all cursor-pointer hover:scale-105 ${isDiscovered
                       ? 'bg-gradient-to-br from-purple-500/40 to-pink-500/40 border-2 border-yellow-400'
                       : 'bg-white/5 border-2 border-white/10'
@@ -594,7 +629,7 @@ const ChemistryGame = () => {
                           <div className="flex flex-wrap gap-1 justify-center">
                             {recipe.formula.map((elem, idx) => (
                               <span
-                                key={idx}
+                                key={elem + idx}
                                 className="text-xs px-2 py-1 rounded text-white font-bold"
                                 style={{ backgroundColor: elementData[elem].color }}
                               >
