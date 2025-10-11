@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { TrendingUp, Book, Sparkles, X, Info } from 'lucide-react';
-import elementsData from './elements.json';
-import recipesData from './recipes.json';
-// 원소 데이터
-const elementData = elementsData;
-
-// 화합물 레시피 데이터
-const recipes = recipesData;
+import elementsData from './data/elements.json';
+import recipesData from './data/recipes.json';
+import { GameHeader } from './components/GameHeader';
+import { ElementShop } from './components/ElementShop';
+import { Laboratory } from './components/Laboratory';
+import { CompoundInventory } from './components/CompoundInventory';
+import { Encyclopedia } from './components/Encyclopedia';
+import { Modal } from './components/Modal';
+import { MessageNotification } from './components/MessageNotification';
 
 const ChemistryGame = () => {
+
+  const elementData = elementsData;
+  const recipes = recipesData;
+
   const [money, setMoney] = useState(50);
   const [level, setLevel] = useState(1);
   const [experience, setExperience] = useState(0);
@@ -26,14 +31,6 @@ const ChemistryGame = () => {
   const [autoProduction, setAutoProduction] = useState({});
   const [modalData, setModalData] = useState(null);
   const [modalType, setModalType] = useState(null);
-  const [elementCategory, setElementCategory] = useState('nonmetal');
-
-  const categories = {
-    nonmetal: { name: '비금속', icon: '⚡' },
-    metal: { name: '금속', icon: '⚙️' },
-    transition: { name: '전이금속', icon: '🔩' },
-    noble: { name: '비활성기체', icon: '🎈' }
-  };
 
   const experienceToNextLevel = level * 100;
 
@@ -196,460 +193,56 @@ const ChemistryGame = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 p-4">
-      <div className="fixed bottom-6 right-6 z-50 flex flex-col-reverse gap-2">
-        {messages.map((message) => (
-          <div
-            key={message.id}
-            className={`text-lg font-bold p-4 rounded-xl shadow-2xl ${message.type === 'success' ? 'bg-green-500' :
-              message.type === 'discovery' ? 'bg-purple-500 animate-pulse' :
-                'bg-red-500'
-              } text-white transition-all duration-300`}
-          >
-            {message.text}
-          </div>
-        ))}
-      </div>
+    <div className="h-screen overflow-hidden bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 p-4 flex flex-col">
+      <MessageNotification messages={messages} />
 
-      {modalData && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4" onClick={closeModal}>
-          <div className="bg-white rounded-2xl p-8 max-w-2xl w-full relative" onClick={(e) => e.stopPropagation()}>
-            <button
-              onClick={closeModal}
-              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition-colors"
-            >
-              <X size={32} />
-            </button>
+      <Modal
+        modalData={modalData}
+        modalType={modalType}
+        closeModal={closeModal}
+      />
 
-            {modalType === 'element' ? (
-              <div>
-                <div className="flex items-center gap-4 mb-6">
-                  <div
-                    className="w-24 h-24 rounded-xl flex items-center justify-center text-white font-bold text-4xl shadow-lg"
-                    style={{ backgroundColor: modalData.color }}
-                  >
-                    {modalData.symbol}
-                  </div>
-                  <div>
-                    <h2 className="text-4xl font-bold text-gray-800">{modalData.name}</h2>
-                    <p className="text-xl text-gray-600">원자 번호: {modalData.atomicNumber}</p>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <div>
-                    <h3 className="text-xl font-bold text-gray-700 mb-2">📝 설명</h3>
-                    <p className="text-gray-600 leading-relaxed">{modalData.description}</p>
-                  </div>
-
-                  <div>
-                    <h3 className="text-xl font-bold text-gray-700 mb-2">🔬 주요 용도</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {modalData.uses.map((use, idx) => (
-                        <span key={idx} className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">
-                          {use}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="bg-gradient-to-r from-yellow-100 to-orange-100 p-4 rounded-xl">
-                    <p className="text-lg font-bold text-gray-800">💰 구매 가격: {modalData.price}원</p>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div>
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="text-7xl">{modalData.emoji}</div>
-                  <div>
-                    <h2 className="text-4xl font-bold text-gray-800">{modalData.name}</h2>
-                    <p className="text-2xl text-gray-600">{modalData.symbol}</p>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <div>
-                    <h3 className="text-xl font-bold text-gray-700 mb-2">📝 설명</h3>
-                    <p className="text-gray-600 leading-relaxed">{modalData.description}</p>
-                  </div>
-
-                  <div>
-                    <h3 className="text-xl font-bold text-gray-700 mb-2">⚗️ 필요한 원소</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {modalData.formula.map((elem, idx) => (
-                        <span
-                          key={idx}
-                          className="px-4 py-2 rounded-lg text-white font-bold text-lg shadow-lg"
-                          style={{ backgroundColor: elementData[elem].color }}
-                        >
-                          {elem} - {elementData[elem].name}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 className="text-xl font-bold text-gray-700 mb-2">🔬 성질</h3>
-                    <p className="bg-purple-100 text-purple-800 px-4 py-2 rounded-lg font-semibold">
-                      {modalData.properties}
-                    </p>
-                  </div>
-
-                  <div>
-                    <h3 className="text-xl font-bold text-gray-700 mb-2">💼 주요 용도</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {modalData.uses.map((use, idx) => (
-                        <span key={idx} className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">
-                          {use}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="bg-gradient-to-r from-green-100 to-teal-100 p-4 rounded-xl">
-                    <p className="text-lg font-bold text-gray-800">💰 판매 가격: {modalData.value}원</p>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      <div className="max-w-7xl mx-auto">
-        <div className="bg-white/10 backdrop-blur-md rounded-3xl shadow-2xl p-6 mb-4 border border-white/20">
-          <h1 className="text-5xl font-bold text-center mb-4 text-white">
-            ⚛️ 연금술사의 실험실 ⚛️
-          </h1>
-
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 mb-4">
-            {/* 보유 자금 */}
-            <div className="bg-gradient-to-r from-yellow-400 to-orange-500 rounded-2xl p-4 text-white">
-              <div className="flex items-center gap-2 mb-2">
-                <TrendingUp size={28} />
-                <span className="text-xl font-bold">보유 자금</span>
-              </div>
-              <p className="text-4xl font-bold">{money}원</p>
-            </div>
-
-            {/* 발견한 화합물 */}
-            <div className="bg-gradient-to-r from-green-400 to-teal-500 rounded-2xl p-4 text-white">
-              <div className="flex items-center gap-2 mb-2">
-                <Book size={28} />
-                <span className="text-xl font-bold">발견한 화합물</span>
-              </div>
-              <p className="text-4xl font-bold">{discovered.length}/{recipes.length}</p>
-            </div>
-
-            {/* 레벨 + 버튼 영역 */}
-            <div className="lg:col-span-3 grid grid-rows-[2fr_1fr] gap-2">
-              {/* 레벨 */}
-              <div className="bg-gradient-to-r from-purple-400 to-pink-500 rounded-2xl p-4 text-white flex flex-col justify-center">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-xl font-bold">⭐ 레벨 {level}</span>
-                  <span className="text-sm">{experience}/{experienceToNextLevel} EXP</span>
-                </div>
-                <div className="w-full bg-white/30 rounded-full h-3">
-                  <div
-                    className="bg-white rounded-full h-3 transition-all duration-300"
-                    style={{ width: `${(experience / experienceToNextLevel) * 100}%` }}
-                  ></div>
-                </div>
-              </div>
-
-              {/* 버튼 영역 */}
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  onClick={() => setShowLab(true)}
-                  className={`rounded-xl font-bold text-lg transition-all ${showLab ? 'bg-blue-500 text-white' : 'bg-white/20 text-white/60'
-                    }`}
-                >
-                  🧪 실험실
-                </button>
-                <button
-                  onClick={() => setShowLab(false)}
-                  className={`rounded-xl font-bold text-lg transition-all ${!showLab ? 'bg-blue-500 text-white' : 'bg-white/20 text-white/60'
-                    }`}
-                >
-                  <Sparkles className="inline mr-2" />
-                  도감
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+      <div className="max-w-7xl mx-auto flex-1 flex flex-col overflow-hidden">
+        <GameHeader
+          money={money}
+          discovered={discovered}
+          level={level}
+          experience={experience}
+          experienceToNextLevel={experienceToNextLevel}
+          showLab={showLab}
+          setShowLab={setShowLab}
+        />
 
         {showLab ? (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
-              <h2 className="text-2xl font-bold mb-4 text-white">⚛️ 원소 상점</h2>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 flex-1 overflow-hidden">
+            <ElementShop
+              elements={elements}
+              level={level}
+              autoProduction={autoProduction}
+              buyElement={buyElement}
+              buyAutoProducer={buyAutoProducer}
+              openElementModal={openElementModal}
+            />
 
-              <div className="flex flex-wrap gap-2 mb-4">
-                {Object.keys(categories).map(cat => (
-                  <button
-                    key={cat}
-                    onClick={() => setElementCategory(cat)}
-                    className={`px-2 py-1 rounded-lg font-bold text-xs transition-all ${elementCategory === cat
-                      ? 'bg-blue-500 text-white'
-                      : 'bg-white/20 text-white/60 hover:bg-white/30'
-                      }`}
-                  >
-                    {categories[cat].icon} {categories[cat].name}
-                  </button>
-                ))}
-              </div>
+            <Laboratory
+              elements={elements}
+              selectedElements={selectedElements}
+              selectElement={selectElement}
+              combineElements={combineElements}
+              clearSelection={clearSelection}
+            />
 
-              <div className="grid grid-cols-2 gap-2 max-h-[500px] overflow-y-auto">
-                {Object.keys(elementData)
-                  .filter(element => elementData[element].category === elementCategory)
-                  .map(element => {
-                    const isLocked = elementData[element].unlockLevel > level;
-                    return (
-                      <div
-                        key={element}
-                        className={`rounded-xl p-3 ${isLocked
-                          ? 'bg-white/5 opacity-50'
-                          : 'bg-white/10'
-                          }`}
-                      >
-                        <div className="flex flex-col gap-2">
-                          <div className="flex items-center gap-2">
-                            <div
-                              className={`w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold text-lg ${isLocked ? 'cursor-not-allowed' : 'cursor-pointer hover:scale-110'
-                                } transition-transform relative`}
-                              style={{ backgroundColor: isLocked ? '#666' : elementData[element].color }}
-                              onClick={() => !isLocked && openElementModal(element)}
-                            >
-                              {isLocked ? '🔒' : element}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-1">
-                                <p className="font-bold text-white text-sm truncate">
-                                  {isLocked ? '???' : elementData[element].name}
-                                </p>
-                                {!isLocked && (
-                                  <button
-                                    onClick={() => openElementModal(element)}
-                                    className="text-white/70 hover:text-white transition-colors flex-shrink-0"
-                                  >
-                                    <Info size={14} />
-                                  </button>
-                                )}
-                              </div>
-                              {isLocked ? (
-                                <p className="text-xs text-white/70">
-                                  레벨 {elementData[element].unlockLevel} 필요
-                                </p>
-                              ) : (
-                                <p className="text-xs text-white/70">
-                                  보유: {elements[element] || 0}개
-                                </p>
-                              )}
-                            </div>
-                          </div>
-
-                          <button
-                            onClick={() => buyElement(element)}
-                            disabled={isLocked}
-                            className={`w-full px-3 py-1.5 rounded-lg font-bold text-sm transition-all ${isLocked
-                              ? 'bg-gray-500 text-gray-300 cursor-not-allowed'
-                              : 'bg-green-500 hover:bg-green-600 text-white'
-                              }`}
-                          >
-                            {isLocked ? '잠김' : `${elementData[element].price}원`}
-                          </button>
-
-                          {!isLocked && autoProduction[element] > 0 && (
-                            <p className="text-xs text-green-300">
-                              ⚡ 자동 생산: +{autoProduction[element]}/3초
-                            </p>
-                          )}
-
-                          {!isLocked ? (
-                            <button
-                              onClick={() => buyAutoProducer(element)}
-                              className="w-full bg-purple-500/50 hover:bg-purple-600/70 text-white px-2 py-1 rounded text-xs font-bold transition-all"
-                            >
-                              자동 생산기 ({elementData[element].price * 10}원)
-                            </button>
-                          ) : (
-                            <div className="h-6"></div>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-              </div>
-            </div>
-
-            <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
-              <h2 className="text-2xl font-bold mb-4 text-white">🧪 실험 공간</h2>
-
-              <div className="grid grid-cols-2 gap-4 mb-4">
-                {/* 선택된 원소 */}
-                <div className="bg-white/20 rounded-xl p-4">
-                  <p className="text-white font-bold mb-3">선택된 원소:</p>
-                  <div className="relative">
-                    <div className="flex flex-wrap gap-2 h-32 overflow-y-auto content-start p-1">
-                      {selectedElements.map((elem, idx) => (
-                        <div
-                          key={idx}
-                          className="w-6 h-6 rounded-lg flex items-center justify-center text-white font-bold shadow-lg text-xs flex-shrink-0"
-                          style={{ backgroundColor: elementData[elem].color }}
-                        >
-                          {elem}
-                        </div>
-                      ))}
-                    </div>
-                    {selectedElements.length > 16 && (
-                      <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white/30 to-transparent pointer-events-none flex items-end justify-center pb-1">
-                        <span className="text-xs text-white/70">↓</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* 보유 원소 */}
-                <div className="bg-white/20 rounded-xl p-4">
-                  <p className="text-white font-bold mb-3">보유 원소 클릭:</p>
-                  <div className="relative">
-                    <div className="flex flex-wrap gap-2 h-32 overflow-y-auto content-start p-1">
-                      {Object.keys(elements).filter(e => elements[e] > 0).map(elem => (
-                        <div
-                          key={elem}
-                          className="relative flex-shrink-0"
-                        >
-                          <button
-                            onClick={() => selectElement(elem)}
-                            className="hover:scale-110 transition-transform block"
-                          >
-                            <div
-                              className="w-7 h-7 rounded-lg flex items-center justify-center text-white font-bold shadow-lg text-xs"
-                              style={{ backgroundColor: elementData[elem].color }}
-                            >
-                              {elem}
-                            </div>
-                          </button>
-                          <span className="absolute -top-1 -right-1 bg-yellow-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-[10px] font-bold pointer-events-none">
-                            {elements[elem]}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                    {Object.keys(elements).filter(e => elements[e] > 0).length > 12 && (
-                      <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white/30 to-transparent pointer-events-none flex items-end justify-center pb-1">
-                        <span className="text-xs text-white/70">↓</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex gap-2">
-                <button
-                  onClick={combineElements}
-                  className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white py-3 rounded-xl font-bold text-lg transition-all transform hover:scale-105"
-                >
-                  🧪 조합하기
-                </button>
-                <button
-                  onClick={clearSelection}
-                  className="bg-red-500 hover:bg-red-600 text-white px-4 py-3 rounded-xl font-bold transition-all"
-                >
-                  취소
-                </button>
-              </div>
-            </div>
-
-            <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
-              <h2 className="text-2xl font-bold mb-4 text-white">💎 보유 화합물</h2>
-              <div className="space-y-2 max-h-[600px] overflow-y-auto">
-                {Object.keys(compounds).filter(c => compounds[c] > 0).map(compoundKey => {
-                  const recipe = recipes.find(r => r.symbol === compoundKey);
-                  return (
-                    <div key={compoundKey} className="bg-gradient-to-r from-purple-500/30 to-pink-500/30 rounded-xl p-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <p className="text-3xl">{recipe.emoji}</p>
-                            <button
-                              onClick={() => openCompoundModal(compoundKey)}
-                              className="text-white/70 hover:text-white transition-colors"
-                            >
-                              <Info size={20} />
-                            </button>
-                          </div>
-                          <p className="font-bold text-white text-lg">{recipe.name}</p>
-                          <p className="text-sm text-white/70">{recipe.symbol}</p>
-                          <p className="text-xs text-green-300 mt-1">보유: {compounds[compoundKey]}개</p>
-                        </div>
-                        <button
-                          onClick={() => sellCompound(compoundKey)}
-                          className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-bold transition-all"
-                        >
-                          판매<br />{recipe.value}원
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })}
-                {Object.keys(compounds).filter(c => compounds[c] > 0).length === 0 && (
-                  <p className="text-white/50 text-center py-8">아직 제조한 화합물이 없습니다</p>
-                )}
-              </div>
-            </div>
+            <CompoundInventory
+              compounds={compounds}
+              sellCompound={sellCompound}
+              openCompoundModal={openCompoundModal}
+            />
           </div>
         ) : (
-          <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
-            <h2 className="text-3xl font-bold mb-6 text-white text-center">📖 화합물 도감</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {recipes.map(recipe => {
-                const isDiscovered = discovered.includes(recipe.symbol);
-                return (
-                  <div
-                    key={recipe.symbol + (isDiscovered ? '-d' : '-u')} // 발견 여부에 따라 key 달리 지정
-                    className={`rounded-xl p-4 transition-all cursor-pointer hover:scale-105 ${isDiscovered
-                      ? 'bg-gradient-to-br from-purple-500/40 to-pink-500/40 border-2 border-yellow-400'
-                      : 'bg-white/5 border-2 border-white/10'
-                      }`}
-                    onClick={() => isDiscovered && openCompoundModal(recipe.symbol)}
-                  >
-                    <div className="text-center">
-                      <p className="text-5xl mb-3">{isDiscovered ? recipe.emoji : '❓'}</p>
-                      <p className="font-bold text-white text-lg mb-1">
-                        {isDiscovered ? recipe.name : '???'}
-                      </p>
-                      <p className="text-sm text-white/70 mb-2">
-                        {isDiscovered ? recipe.symbol : '???'}
-                      </p>
-                      {isDiscovered && (
-                        <>
-                          <p className="text-xs text-white/60 mb-1">필요 원소:</p>
-                          <div className="flex flex-wrap gap-1 justify-center">
-                            {recipe.formula.map((elem, idx) => (
-                              <span
-                                key={elem + idx}
-                                className="text-xs px-2 py-1 rounded text-white font-bold"
-                                style={{ backgroundColor: elementData[elem].color }}
-                              >
-                                {elem}
-                              </span>
-                            ))}
-                          </div>
-                          <p className="text-green-300 font-bold mt-2">가치: {recipe.value}원</p>
-                          <div className="mt-2 flex items-center justify-center gap-1 text-white/60">
-                            <Info size={14} />
-                            <span className="text-xs">클릭하여 상세보기</span>
-                          </div>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+          <Encyclopedia
+            discovered={discovered}
+            openCompoundModal={openCompoundModal}
+          />
         )}
       </div>
     </div>
