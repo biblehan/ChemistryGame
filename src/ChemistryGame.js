@@ -1,132 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { TrendingUp, Book, Sparkles } from 'lucide-react';
-
-// ============================================
-// 데이터 파일 분리 영역 시작
-// ============================================
-// 실제 프로젝트에서는 이 부분을 별도 파일로 분리할 수 있습니다.
-// 예시: src/data/elements.json, src/data/recipes.json 생성 후
-// 파일 상단에서 불러와서 사용하세요
-
+import { TrendingUp, Book, Sparkles, X, Info } from 'lucide-react';
+import elementsData from './elements.json';
+import recipesData from './recipes.json';
 // 원소 데이터
-// 나중에 파일로 분리 가능: src/data/elements.json
-const elementData = {
-  H: { name: '수소', color: '#FF6B6B', price: 1 },
-  O: { name: '산소', color: '#4ECDC4', price: 2 },
-  C: { name: '탄소', color: '#45B7D1', price: 3 },
-  N: { name: '질소', color: '#A8E6CF', price: 4 },
-  S: { name: '황', color: '#FFD93D', price: 10 },
-  P: { name: '인', color: '#FFA07A', price: 15 },
-  Cl: { name: '염소', color: '#98D8C8', price: 20 },
-  Na: { name: '나트륨', color: '#F7DC6F', price: 25 }
-  // 새로운 원소를 추가하려면 여기에 추가하세요
-  // 예: Fe: { name: '철', color: '#B7410E', price: 30 }
-};
+const elementData = elementsData;
 
 // 화합물 레시피 데이터
-// 나중에 파일로 분리 시: src/data/recipes.json
-const recipes = [
-  { 
-    formula: ['H', 'H', 'O'], 
-    name: '물', 
-    symbol: 'H₂O', 
-    value: 10, 
-    emoji: '💧' 
-  },
-  { 
-    formula: ['C', 'O', 'O'], 
-    name: '이산화탄소', 
-    symbol: 'CO₂', 
-    value: 15, 
-    emoji: '☁️' 
-  },
-  { 
-    formula: ['N', 'H', 'H', 'H'], 
-    name: '암모니아', 
-    symbol: 'NH₃', 
-    value: 20, 
-    emoji: '💨' 
-  },
-  { 
-    formula: ['H', 'H', 'O', 'O'], 
-    name: '과산화수소', 
-    symbol: 'H₂O₂', 
-    value: 25, 
-    emoji: '🧪' 
-  },
-  { 
-    formula: ['C', 'H', 'H', 'H', 'H'], 
-    name: '메테인', 
-    symbol: 'CH₄', 
-    value: 30, 
-    emoji: '🔥' 
-  },
-  { 
-    formula: ['N', 'N', 'O'], 
-    name: '아산화질소', 
-    symbol: 'N₂O', 
-    value: 35, 
-    emoji: '😄' 
-  },
-  { 
-    formula: ['C', 'C', 'H', 'H', 'H', 'H', 'H', 'H'], 
-    name: '에테인', 
-    symbol: 'C₂H₆', 
-    value: 50, 
-    emoji: '⚗️' 
-  },
-  { 
-    formula: ['S', 'O', 'O'], 
-    name: '이산화황', 
-    symbol: 'SO₂', 
-    value: 40, 
-    emoji: '🌫️' 
-  },
-  { 
-    formula: ['Na', 'Cl'], 
-    name: '소금', 
-    symbol: 'NaCl', 
-    value: 60, 
-    emoji: '🧂' 
-  },
-  { 
-    formula: ['H', 'Cl'], 
-    name: '염산', 
-    symbol: 'HCl', 
-    value: 45, 
-    emoji: '⚠️' 
-  },
-  { 
-    formula: ['P', 'H', 'H', 'H'], 
-    name: '포스핀', 
-    symbol: 'PH₃', 
-    value: 55, 
-    emoji: '💀' 
-  },
-  { 
-    formula: ['C', 'O'], 
-    name: '일산화탄소', 
-    symbol: 'CO', 
-    value: 12, 
-    emoji: '☠️' 
-  }
-  // 새로운 화합물을 추가하려면 여기에 추가하세요
-  // 예: { formula: ['H', 'H', 'S'], name: '황화수소', symbol: 'H₂S', value: 35, emoji: '🥚' }
-];
-
-// ============================================
-// 데이터 파일 분리 영역 끝
-// ============================================
-// 실제 프로젝트에서 JSON 파일로 분리하는 방법:
-// 
-// 1. src/data/elements.json 파일 생성하여 elementData 내용 복사
-// 2. src/data/recipes.json 파일 생성하여 recipes 내용 복사
-// 3. 파일 상단에서 JSON 파일을 불러오기
-// 4. 위의 const elementData 와 const recipes 선언 부분을 삭제
-// ============================================
+const recipes = recipesData;
 
 const ChemistryGame = () => {
   const [money, setMoney] = useState(50);
+  const [level, setLevel] = useState(1);
+  const [experience, setExperience] = useState(0);
   const [elements, setElements] = useState({
     H: 10,
     O: 5,
@@ -138,12 +23,19 @@ const ChemistryGame = () => {
   const [selectedElements, setSelectedElements] = useState([]);
   const [messages, setMessages] = useState([]);
   const [showLab, setShowLab] = useState(true);
-  const [autoProduction, setAutoProduction] = useState({
-    H: 0,
-    O: 0,
-    C: 0,
-    N: 0
-  });
+  const [autoProduction, setAutoProduction] = useState({});
+  const [modalData, setModalData] = useState(null);
+  const [modalType, setModalType] = useState(null);
+  const [elementCategory, setElementCategory] = useState('nonmetal');
+
+  const categories = {
+    nonmetal: { name: '비금속', icon: '⚡' },
+    metal: { name: '금속', icon: '⚙️' },
+    transition: { name: '전이금속', icon: '🔩' },
+    noble: { name: '비활성기체', icon: '🎈' }
+  };
+
+  const experienceToNextLevel = level * 100;
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -161,15 +53,37 @@ const ChemistryGame = () => {
     return () => clearInterval(interval);
   }, [autoProduction]);
 
+  const openElementModal = (elementSymbol) => {
+    setModalData(elementData[elementSymbol]);
+    setModalType('element');
+  };
+
+  const openCompoundModal = (compoundSymbol) => {
+    const recipe = recipes.find(r => r.symbol === compoundSymbol);
+    setModalData(recipe);
+    setModalType('compound');
+  };
+
+  const closeModal = () => {
+    setModalData(null);
+    setModalType(null);
+  };
+
   const buyElement = (element) => {
-    const price = elementData[element].price;
+    const elementInfo = elementData[element];
+    if (elementInfo.unlockLevel > level) {
+      showMessage(`레벨 ${elementInfo.unlockLevel}에 잠금 해제됩니다!`, 'error');
+      return;
+    }
+
+    const price = elementInfo.price;
     if (money >= price) {
       setMoney(money - price);
       setElements(prev => ({
         ...prev,
         [element]: (prev[element] || 0) + 1
       }));
-      showMessage(`${elementData[element].name} 구매 완료!`, 'success');
+      showMessage(`${elementInfo.name} 구매 완료!`, 'success');
     } else {
       showMessage('돈이 부족합니다!', 'error');
     }
@@ -218,12 +132,23 @@ const ChemistryGame = () => {
         ...prev,
         [compoundKey]: (prev[compoundKey] || 0) + 1
       }));
-      
+
+      const expGain = recipe.value;
+      setExperience(prev => {
+        const newExp = prev + expGain;
+        if (newExp >= experienceToNextLevel) {
+          setLevel(prevLevel => prevLevel + 1);
+          showMessage(`🎉 레벨 업! 레벨 ${level + 1}이 되었습니다!`, 'discovery');
+          return newExp - experienceToNextLevel;
+        }
+        return newExp;
+      });
+
       if (!discovered.includes(recipe.symbol)) {
         setDiscovered([...discovered, recipe.symbol]);
-        showMessage(`🎉 새로운 발견! ${recipe.name}(${recipe.symbol})`, 'discovery');
+        showMessage(`🎉 새로운 발견! ${recipe.name}(${recipe.symbol}) +${expGain}EXP`, 'discovery');
       } else {
-        showMessage(`${recipe.name} 제조 완료!`, 'success');
+        showMessage(`${recipe.name} 제조 완료! +${expGain}EXP`, 'success');
       }
       setSelectedElements([]);
     } else {
@@ -250,7 +175,7 @@ const ChemistryGame = () => {
       setMoney(money - cost);
       setAutoProduction(prev => ({
         ...prev,
-        [element]: prev[element] + 1
+        [element]: (prev[element] || 0) + 1
       }));
       showMessage(`${elementData[element].name} 자동 생산기 구매!`, 'success');
     } else {
@@ -259,10 +184,10 @@ const ChemistryGame = () => {
   };
 
   const showMessage = (text, type) => {
-    const newMessage = { 
-      id: Date.now(), 
-      text, 
-      type 
+    const newMessage = {
+      id: Date.now(),
+      text,
+      type
     };
     setMessages(prev => [...prev, newMessage]);
     setTimeout(() => {
@@ -274,25 +199,130 @@ const ChemistryGame = () => {
     <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 p-4">
       <div className="fixed bottom-6 right-6 z-50 flex flex-col-reverse gap-2">
         {messages.map((message) => (
-          <div 
+          <div
             key={message.id}
-            className={`text-lg font-bold p-4 rounded-xl shadow-2xl ${
-              message.type === 'success' ? 'bg-green-500' :
+            className={`text-lg font-bold p-4 rounded-xl shadow-2xl ${message.type === 'success' ? 'bg-green-500' :
               message.type === 'discovery' ? 'bg-purple-500 animate-pulse' :
-              'bg-red-500'
-            } text-white transition-all duration-300`}
+                'bg-red-500'
+              } text-white transition-all duration-300`}
           >
             {message.text}
           </div>
         ))}
       </div>
-      
+
+      {modalData && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4" onClick={closeModal}>
+          <div className="bg-white rounded-2xl p-8 max-w-2xl w-full relative" onClick={(e) => e.stopPropagation()}>
+            <button
+              onClick={closeModal}
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition-colors"
+            >
+              <X size={32} />
+            </button>
+
+            {modalType === 'element' ? (
+              <div>
+                <div className="flex items-center gap-4 mb-6">
+                  <div
+                    className="w-24 h-24 rounded-xl flex items-center justify-center text-white font-bold text-4xl shadow-lg"
+                    style={{ backgroundColor: modalData.color }}
+                  >
+                    {modalData.symbol}
+                  </div>
+                  <div>
+                    <h2 className="text-4xl font-bold text-gray-800">{modalData.name}</h2>
+                    <p className="text-xl text-gray-600">원자 번호: {modalData.atomicNumber}</p>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-700 mb-2">📝 설명</h3>
+                    <p className="text-gray-600 leading-relaxed">{modalData.description}</p>
+                  </div>
+
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-700 mb-2">🔬 주요 용도</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {modalData.uses.map((use, idx) => (
+                        <span key={idx} className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">
+                          {use}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="bg-gradient-to-r from-yellow-100 to-orange-100 p-4 rounded-xl">
+                    <p className="text-lg font-bold text-gray-800">💰 구매 가격: {modalData.price}원</p>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div>
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="text-7xl">{modalData.emoji}</div>
+                  <div>
+                    <h2 className="text-4xl font-bold text-gray-800">{modalData.name}</h2>
+                    <p className="text-2xl text-gray-600">{modalData.symbol}</p>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-700 mb-2">📝 설명</h3>
+                    <p className="text-gray-600 leading-relaxed">{modalData.description}</p>
+                  </div>
+
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-700 mb-2">⚗️ 필요한 원소</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {modalData.formula.map((elem, idx) => (
+                        <span
+                          key={idx}
+                          className="px-4 py-2 rounded-lg text-white font-bold text-lg shadow-lg"
+                          style={{ backgroundColor: elementData[elem].color }}
+                        >
+                          {elem} - {elementData[elem].name}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-700 mb-2">🔬 성질</h3>
+                    <p className="bg-purple-100 text-purple-800 px-4 py-2 rounded-lg font-semibold">
+                      {modalData.properties}
+                    </p>
+                  </div>
+
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-700 mb-2">💼 주요 용도</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {modalData.uses.map((use, idx) => (
+                        <span key={idx} className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">
+                          {use}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="bg-gradient-to-r from-green-100 to-teal-100 p-4 rounded-xl">
+                    <p className="text-lg font-bold text-gray-800">💰 판매 가격: {modalData.value}원</p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       <div className="max-w-7xl mx-auto">
         <div className="bg-white/10 backdrop-blur-md rounded-3xl shadow-2xl p-6 mb-4 border border-white/20">
           <h1 className="text-5xl font-bold text-center mb-4 text-white">
             ⚛️ 연금술사의 실험실 ⚛️
           </h1>
-          
+
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div className="bg-gradient-to-r from-yellow-400 to-orange-500 rounded-2xl p-4 text-white">
               <div className="flex items-center gap-2 mb-2">
@@ -310,20 +340,31 @@ const ChemistryGame = () => {
             </div>
           </div>
 
+          <div className="bg-gradient-to-r from-purple-400 to-pink-500 rounded-2xl p-4 mb-4 text-white">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-xl font-bold">⭐ 레벨 {level}</span>
+              <span className="text-sm">{experience}/{experienceToNextLevel} EXP</span>
+            </div>
+            <div className="w-full bg-white/30 rounded-full h-3">
+              <div
+                className="bg-white rounded-full h-3 transition-all duration-300"
+                style={{ width: `${(experience / experienceToNextLevel) * 100}%` }}
+              ></div>
+            </div>
+          </div>
+
           <div className="flex gap-2 mb-4">
             <button
               onClick={() => setShowLab(true)}
-              className={`flex-1 py-3 rounded-xl font-bold text-lg transition-all ${
-                showLab ? 'bg-blue-500 text-white' : 'bg-white/20 text-white/60'
-              }`}
+              className={`flex-1 py-3 rounded-xl font-bold text-lg transition-all ${showLab ? 'bg-blue-500 text-white' : 'bg-white/20 text-white/60'
+                }`}
             >
               🧪 실험실
             </button>
             <button
               onClick={() => setShowLab(false)}
-              className={`flex-1 py-3 rounded-xl font-bold text-lg transition-all ${
-                !showLab ? 'bg-blue-500 text-white' : 'bg-white/20 text-white/60'
-              }`}
+              className={`flex-1 py-3 rounded-xl font-bold text-lg transition-all ${!showLab ? 'bg-blue-500 text-white' : 'bg-white/20 text-white/60'
+                }`}
             >
               <Sparkles className="inline mr-2" />
               도감
@@ -335,46 +376,103 @@ const ChemistryGame = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
               <h2 className="text-2xl font-bold mb-4 text-white">⚛️ 원소 상점</h2>
-              <div className="space-y-2">
-                {Object.keys(elementData).map(element => (
-                  <div key={element} className="bg-white/10 rounded-xl p-3">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <div
-                          className="w-12 h-12 rounded-lg flex items-center justify-center text-white font-bold text-xl"
-                          style={{ backgroundColor: elementData[element].color }}
-                        >
-                          {element}
-                        </div>
-                        <div>
-                          <p className="font-bold text-white">{elementData[element].name}</p>
-                          <p className="text-sm text-white/70">보유: {elements[element] || 0}개</p>
-                        </div>
-                      </div>
-                      <button
-                        onClick={() => buyElement(element)}
-                        className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-bold transition-all"
-                      >
-                        {elementData[element].price}원
-                      </button>
-                    </div>
-                    {autoProduction[element] > 0 && (
-                      <p className="text-xs text-green-300">⚡ 자동 생산: +{autoProduction[element]}/3초</p>
-                    )}
-                    <button
-                      onClick={() => buyAutoProducer(element)}
-                      className="w-full bg-purple-500/50 hover:bg-purple-600/70 text-white px-2 py-1 rounded text-xs font-bold mt-1 transition-all"
-                    >
-                      자동 생산기 ({elementData[element].price * 10}원)
-                    </button>
-                  </div>
+
+              <div className="flex flex-wrap gap-2 mb-4">
+                {Object.keys(categories).map(cat => (
+                  <button
+                    key={cat}
+                    onClick={() => setElementCategory(cat)}
+                    className={`px-3 py-2 rounded-lg font-bold text-sm transition-all ${elementCategory === cat
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-white/20 text-white/60 hover:bg-white/30'
+                      }`}
+                  >
+                    {categories[cat].icon} {categories[cat].name}
+                  </button>
                 ))}
+              </div>
+
+              <div className="space-y-2 max-h-[500px] overflow-y-auto">
+                {Object.keys(elementData)
+                  .filter(element => elementData[element].category === elementCategory)
+                  .map(element => {
+                    const isLocked = elementData[element].unlockLevel > level;
+                    return (
+                      <div
+                        key={element}
+                        className={`rounded-xl p-3 ${isLocked
+                          ? 'bg-white/5 opacity-50'
+                          : 'bg-white/10'
+                          }`}
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <div
+                              className={`w-12 h-12 rounded-lg flex items-center justify-center text-white font-bold text-xl ${isLocked ? 'cursor-not-allowed' : 'cursor-pointer hover:scale-110'
+                                } transition-transform relative`}
+                              style={{ backgroundColor: isLocked ? '#666' : elementData[element].color }}
+                              onClick={() => !isLocked && openElementModal(element)}
+                            >
+                              {isLocked ? '🔒' : element}
+                            </div>
+                            <div>
+                              <div className="flex items-center gap-1">
+                                <p className="font-bold text-white">
+                                  {isLocked ? '???' : elementData[element].name}
+                                </p>
+                                {!isLocked && (
+                                  <button
+                                    onClick={() => openElementModal(element)}
+                                    className="text-white/70 hover:text-white transition-colors"
+                                  >
+                                    <Info size={16} />
+                                  </button>
+                                )}
+                              </div>
+                              {isLocked ? (
+                                <p className="text-sm text-white/70">
+                                  레벨 {elementData[element].unlockLevel} 필요
+                                </p>
+                              ) : (
+                                <p className="text-sm text-white/70">
+                                  보유: {elements[element] || 0}개
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => buyElement(element)}
+                            disabled={isLocked}
+                            className={`px-4 py-2 rounded-lg font-bold transition-all ${isLocked
+                              ? 'bg-gray-500 text-gray-300 cursor-not-allowed'
+                              : 'bg-green-500 hover:bg-green-600 text-white'
+                              }`}
+                          >
+                            {isLocked ? '잠김' : `${elementData[element].price}원`}
+                          </button>
+                        </div>
+                        {!isLocked && autoProduction[element] > 0 && (
+                          <p className="text-xs text-green-300">
+                            ⚡ 자동 생산: +{autoProduction[element]}/3초
+                          </p>
+                        )}
+                        {!isLocked && (
+                          <button
+                            onClick={() => buyAutoProducer(element)}
+                            className="w-full bg-purple-500/50 hover:bg-purple-600/70 text-white px-2 py-1 rounded text-xs font-bold mt-1 transition-all"
+                          >
+                            자동 생산기 ({elementData[element].price * 10}원)
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })}
               </div>
             </div>
 
             <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
               <h2 className="text-2xl font-bold mb-4 text-white">🧪 실험 공간</h2>
-              
+
               <div className="bg-white/20 rounded-xl p-4 mb-4 min-h-32">
                 <p className="text-white font-bold mb-3">선택된 원소:</p>
                 <div className="flex flex-wrap gap-2">
@@ -437,8 +535,16 @@ const ChemistryGame = () => {
                   return (
                     <div key={compoundKey} className="bg-gradient-to-r from-purple-500/30 to-pink-500/30 rounded-xl p-4">
                       <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-3xl mb-1">{recipe.emoji}</p>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <p className="text-3xl">{recipe.emoji}</p>
+                            <button
+                              onClick={() => openCompoundModal(compoundKey)}
+                              className="text-white/70 hover:text-white transition-colors"
+                            >
+                              <Info size={20} />
+                            </button>
+                          </div>
                           <p className="font-bold text-white text-lg">{recipe.name}</p>
                           <p className="text-sm text-white/70">{recipe.symbol}</p>
                           <p className="text-xs text-green-300 mt-1">보유: {compounds[compoundKey]}개</p>
@@ -447,7 +553,7 @@ const ChemistryGame = () => {
                           onClick={() => sellCompound(compoundKey)}
                           className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-bold transition-all"
                         >
-                          판매<br/>{recipe.value}원
+                          판매<br />{recipe.value}원
                         </button>
                       </div>
                     </div>
@@ -468,11 +574,11 @@ const ChemistryGame = () => {
                 return (
                   <div
                     key={recipe.symbol}
-                    className={`rounded-xl p-4 transition-all ${
-                      isDiscovered
-                        ? 'bg-gradient-to-br from-purple-500/40 to-pink-500/40 border-2 border-yellow-400'
-                        : 'bg-white/5 border-2 border-white/10'
-                    }`}
+                    className={`rounded-xl p-4 transition-all cursor-pointer hover:scale-105 ${isDiscovered
+                      ? 'bg-gradient-to-br from-purple-500/40 to-pink-500/40 border-2 border-yellow-400'
+                      : 'bg-white/5 border-2 border-white/10'
+                      }`}
+                    onClick={() => isDiscovered && openCompoundModal(recipe.symbol)}
                   >
                     <div className="text-center">
                       <p className="text-5xl mb-3">{isDiscovered ? recipe.emoji : '❓'}</p>
@@ -497,6 +603,10 @@ const ChemistryGame = () => {
                             ))}
                           </div>
                           <p className="text-green-300 font-bold mt-2">가치: {recipe.value}원</p>
+                          <div className="mt-2 flex items-center justify-center gap-1 text-white/60">
+                            <Info size={14} />
+                            <span className="text-xs">클릭하여 상세보기</span>
+                          </div>
                         </>
                       )}
                     </div>
