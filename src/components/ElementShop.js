@@ -20,9 +20,7 @@ export const ElementShop = ({
     };
 
     return (
-        <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 flex flex-col h-full overflow-hidden">
-            <h2 className="text-2xl font-bold mb-4 text-white">⚛️ 원소 상점</h2>
-
+        <div className="bg-white/10 backdrop-blur-md rounded-2xl p-3 sm:p-6 border border-white/20 flex flex-col h-full overflow-hidden">
             <div className="flex flex-wrap gap-2 mb-4">
                 {Object.keys(categories).map(cat => (
                     <button
@@ -38,7 +36,7 @@ export const ElementShop = ({
                 ))}
             </div>
 
-            <div className="grid grid-cols-2 gap-2 overflow-y-auto flex-1">
+            <div className="grid grid-cols-2 gap-2 overflow-y-scroll flex-1 hide-scrollbar">
                 {Object.keys(elementData)
                     .filter(element => elementData[element].category === elementCategory)
                     .map(element => {

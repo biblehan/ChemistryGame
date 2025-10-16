@@ -31,6 +31,7 @@ const ChemistryGame = () => {
   const [autoProduction, setAutoProduction] = useState({});
   const [modalData, setModalData] = useState(null);
   const [modalType, setModalType] = useState(null);
+  const [activeTab, setActiveTab] = useState('shop'); // 탭 상태 추가
 
   const experienceToNextLevel = level * 100;
 
@@ -194,7 +195,7 @@ const ChemistryGame = () => {
 
   return (
     <div className="h-screen overflow-hidden bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 p-4 flex flex-col">
-      <MessageNotification messages={messages} />
+      <MessageNotification messages={messages} setMessages={setMessages} />
 
       <Modal
         modalData={modalData}
@@ -202,7 +203,7 @@ const ChemistryGame = () => {
         closeModal={closeModal}
       />
 
-      <div className="max-w-7xl mx-auto flex-1 flex flex-col overflow-hidden">
+      <div className="max-w-7xl mx-auto flex-1 flex flex-col overflow-hidden min-w-0">
         <GameHeader
           money={money}
           discovered={discovered}
@@ -214,30 +215,106 @@ const ChemistryGame = () => {
         />
 
         {showLab ? (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 flex-1 overflow-hidden">
-            <ElementShop
-              elements={elements}
-              level={level}
-              autoProduction={autoProduction}
-              buyElement={buyElement}
-              buyAutoProducer={buyAutoProducer}
-              openElementModal={openElementModal}
-            />
+          <>
+            {/* 모바일 탭 메뉴 */}
+            <div className="lg:hidden mb-4">
+              <div className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 p-2 grid grid-cols-3 gap-2">
+                <button
+                  onClick={() => setActiveTab('shop')}
+                  className={`py-3 px-4 rounded-xl font-bold text-sm transition-all ${activeTab === 'shop'
+                    ? 'bg-blue-500 text-white'
+                    : 'bg-white/20 text-white/60'
+                    }`}
+                >
+                  🛒 원소 상점
+                </button>
+                <button
+                  onClick={() => setActiveTab('lab')}
+                  className={`py-3 px-4 rounded-xl font-bold text-sm transition-all ${activeTab === 'lab'
+                    ? 'bg-blue-500 text-white'
+                    : 'bg-white/20 text-white/60'
+                    }`}
+                >
+                  🧪 실험 공간
+                </button>
+                <button
+                  onClick={() => setActiveTab('inventory')}
+                  className={`py-3 px-4 rounded-xl font-bold text-sm transition-all ${activeTab === 'inventory'
+                    ? 'bg-blue-500 text-white'
+                    : 'bg-white/20 text-white/60'
+                    }`}
+                >
+                  📦 화합물
+                </button>
+              </div>
+            </div>
 
-            <Laboratory
-              elements={elements}
-              selectedElements={selectedElements}
-              selectElement={selectElement}
-              combineElements={combineElements}
-              clearSelection={clearSelection}
-            />
+            {/* 모바일 탭 콘텐츠 */}
+            <div className="lg:hidden flex-1 overflow-hidden min-w-0">
+              {activeTab === 'shop' && (
+                <div className="h-full overflow-hidden min-w-0">
+                  <ElementShop
+                    elements={elements}
+                    level={level}
+                    autoProduction={autoProduction}
+                    buyElement={buyElement}
+                    buyAutoProducer={buyAutoProducer}
+                    openElementModal={openElementModal}
+                  />
+                </div>
+              )}
+              {activeTab === 'lab' && (
+                <div className="h-full overflow-hidden min-w-0">
+                  <Laboratory
+                    elements={elements}
+                    setElements={setElements}
+                    selectedElements={selectedElements}
+                    setSelectedElements={setSelectedElements}
+                    selectElement={selectElement}
+                    combineElements={combineElements}
+                    clearSelection={clearSelection}
+                  />
+                </div>
+              )}
+              {activeTab === 'inventory' && (
+                <div className="h-full overflow-hidden min-w-0">
+                  <CompoundInventory
+                    compounds={compounds}
+                    sellCompound={sellCompound}
+                    openCompoundModal={openCompoundModal}
+                  />
+                </div>
+              )}
+            </div>
 
-            <CompoundInventory
-              compounds={compounds}
-              sellCompound={sellCompound}
-              openCompoundModal={openCompoundModal}
-            />
-          </div>
+            {/* PC 그리드 레이아웃 */}
+            <div className="hidden lg:grid lg:grid-cols-3 gap-4 flex-1 overflow-hidden">
+              <ElementShop
+                elements={elements}
+                level={level}
+                autoProduction={autoProduction}
+                buyElement={buyElement}
+                buyAutoProducer={buyAutoProducer}
+                openElementModal={openElementModal}
+              />
+
+              <Laboratory
+                elements={elements}
+                selectedElements={selectedElements}
+                selectElement={selectElement}
+                combineElements={combineElements}
+                clearSelection={clearSelection}
+                setElements={setElements}
+                setSelectedElements={setSelectedElements}
+              />
+
+              <CompoundInventory
+                compounds={compounds}
+                sellCompound={sellCompound}
+                openCompoundModal={openCompoundModal}
+              />
+            </div>
+          </>
         ) : (
           <Encyclopedia
             discovered={discovered}
