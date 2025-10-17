@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Info } from 'lucide-react';
+import '../App.css';
 import elementsData from '../data/elements.json';
 
 export const ElementShop = ({
@@ -37,7 +38,7 @@ export const ElementShop = ({
                 ))}
             </div>
 
-            <div className="grid grid-cols-2 gap-2 overflow-y-scroll flex-1 hide-scrollbar">
+            <div className="grid grid-cols-2 gap-2 overflow-y-scroll flex-1 custom-scrollbar">
                 {Object.keys(elementData)
                     .filter(element => elementData[element].category === elementCategory)
                     .map(element => {

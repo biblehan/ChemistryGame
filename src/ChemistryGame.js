@@ -183,7 +183,7 @@ const ChemistryGame = () => {
 
   const showMessage = (text, type) => {
     const newMessage = {
-      id: Date.now(),
+      id: `${Date.now()}-${Math.random()}`,
       text,
       type
     };

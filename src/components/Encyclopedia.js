@@ -1,5 +1,6 @@
 import React from 'react';
 import { Info } from 'lucide-react';
+import '../App.css';
 import elementsData from '../data/elements.json';
 import recipesData from '../data/recipes.json';
 
@@ -9,7 +10,7 @@ export const Encyclopedia = ({ discovered, openCompoundModal }) => {
     return (
         <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 flex flex-col h-full overflow-hidden">
             <h2 className="text-3xl font-bold mb-6 text-white text-center flex-shrink-0">📖 화합물 도감</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 overflow-y-auto flex-1 min-h-0 p-2">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 overflow-y-scroll flex-1 min-h-0 p-2 custom-scrollbar">
                 {[...recipes]
                     .sort((a, b) => {
                         const aDiscovered = discovered.includes(a.symbol);

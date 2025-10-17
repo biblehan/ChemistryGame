@@ -1,4 +1,5 @@
 import React from 'react';
+import '../App.css';
 import elementsData from '../data/elements.json';
 
 export const Laboratory = ({
