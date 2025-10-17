@@ -203,7 +203,7 @@ const ChemistryGame = () => {
         closeModal={closeModal}
       />
 
-      <div className="max-w-7xl mx-auto flex-1 flex flex-col overflow-hidden min-w-0">
+      <div className="max-w-7xl w-full mx-auto flex-1 flex flex-col overflow-hidden">
         <GameHeader
           money={money}
           discovered={discovered}

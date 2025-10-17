@@ -6,6 +6,7 @@ export const CompoundInventory = ({ compounds, sellCompound, openCompoundModal }
     const recipes = recipesData;
     return (
         <div className="bg-white/10 backdrop-blur-md rounded-2xl p-3 sm:p-6 border border-white/20 flex flex-col h-full overflow-hidden">
+            <h2 className="text-3xl font-bold mb-6 text-white text-center flex-shrink-0 lg:block hidden">📦 화합물</h2>
             <div className="space-y-2 overflow-y-auto flex-1">
                 {Object.keys(compounds).filter(c => compounds[c] > 0).map(compoundKey => {
                     const recipe = recipes.find(r => r.symbol === compoundKey);

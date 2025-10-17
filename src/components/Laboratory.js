@@ -34,6 +34,7 @@ export const Laboratory = ({
 
     return (
         <div className="bg-white/10 backdrop-blur-md rounded-2xl p-3 sm:p-6 border border-white/20 flex flex-col h-full overflow-hidden">
+            <h2 className="text-3xl font-bold mb-6 text-white text-center flex-shrink-0 lg:block hidden">🧪 실험 공간</h2>
             <div className="grid grid-cols-2 gap-2 sm:gap-4 mb-2 sm:mb-4">
                 <div className="bg-white/20 rounded-xl p-2 sm:p-4">
                     <p className="text-white font-bold mb-2 sm:mb-3 text-sm sm:text-base">선택된 원소:</p>

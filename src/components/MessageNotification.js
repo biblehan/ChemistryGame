@@ -7,7 +7,7 @@ export const MessageNotification = ({ messages, setMessages }) => {
     };
 
     return (
-        <div className="fixed bottom-4 left-4 right-4 z-50 flex flex-col-reverse gap-2">
+        <div className="fixed bottom-4 right-4 left-4 lg:left-auto lg:w-1/4 z-50 flex flex-col-reverse gap-2">
             {messages.map((message) => (
                 <div
                     key={message.id}
